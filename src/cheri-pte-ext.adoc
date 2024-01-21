@@ -33,33 +33,45 @@ include::img/sv48pte.edn[]
 include::img/sv57pte.edn[]
 
 The CW bit indicates whether writing capabilities with tag set to the virtual
-page is permitted. Two schemes to manage the CW bit are permitted:
+page is permitted. Two schemes to handle the CW bit are permitted:
 
-* A store page fault exception is raised when a capability store or AMO
-instruction is executed, the <<pcc>> grants store capability permission and the
-store address corresponds to a virtual page with the CW bit clear.
+WARNING: #TODO: Is there a relation between the CW and the W/X bit? Should cap
+writes be rejected if the X bis is set?#
+
+* If <<pcc>> grants store capability permission (see 2.1.2. Architectural Permissions),
+and a capability is written (or an AMO instruction is executed) to a virtual page with the CW bit clear, a store page fault exception is raised.
+Note that if <<pcc>> does not grant store capability permission, this would have
+cause an access fault (or whatever default error behavior)already.
+
 * When a capability store or AMO instruction is executed, the implementation
 clears the tag bit of the capability written to a virtual page with the CW bit
-clear.
+clear. No fault exception is raised.
 
 NOTE: The implementation of the CW bit does not force a dependency on the tag
 bit's value of the capability written, so implementations must support the CW
 bit.
 
+WARNING: #TODO: Clarify last note to be more clear.#
+
+NOTE: The behavior of the CW bit takes priority over the CD bit. Therefore,
+implementations must not take action to change or raise an exception related to
+the CD bit when the CW bit is clear.
+
 The CD bit indicates that a capability with tag set has been written to the
 virtual page since the last time the CD bit was cleared. Implementations are
-strongly encouraged, but not required, to support CD. If supported, two schemes
-to manage the CD bit are permitted:
+strongly encouraged, but not required, to support CD.
 
-* A store page fault exception is raised when a capability store or AMO
-instruction is executed, the <<pcc>> grants store capability permission, the
-tag bit of the capability being written is set and the address written
-corresponds to a virtual page with the CD bit clear.
-* When a capability store or AMO instruction is executed, the <<pcc>> grants store
-capability permission, the tag bit of the capability being written is set and
-the store address corresponds to a virtual page with the CD bit clear, the
-implementation sets the corresponding bit in the PTE. The PTE update must be
-atomic with respect to other accesses to the PTE, and must atomically check
+When all of the following condition apply
+* a capability store or AMO instruction is executed
+* the tag bit of the capability being written is set
+* the <<pcc>> grants store capability permission
+* the address written corresponds to a virtual page with the CD bit clear.
+* the CW bit of that page is set
+then two schemes to manage the CD bit are permitted:
+
+* a store page fault exception is raised. The CD bit remains unchagned.
+* the implementation sets the corresponding bit in the PTE. The PTE update must
+be atomic with respect to other accesses to the PTE, and must atomically check
 that the PTE is valid and grants sufficient permissions. Updates to the CD bit
 must be exact (i.e. not speculative), and observed in program order by the
 local hart. Furthermore, the PTE update must appear in the global memory order
@@ -74,9 +86,6 @@ access that caused the update, and the sequence is interruptible. However, the
 hart must not perform explicit memory access before the PTE update is globally
 visible.
 
-NOTE: The behavior of the CW bit takes priority over the CD bit. Therefore,
-implementations must not take action to change or raise an exception related to
-the CD bit when the CW bit is clear.
 
 [#menvcfg_pte,reftext="menvcfg PTE bits"]
 === Extending the Machine Environment Configuration Register (menvcfg)

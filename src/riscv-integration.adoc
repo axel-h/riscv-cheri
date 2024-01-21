@@ -1124,8 +1124,11 @@ addresses are interpreted as dictated by the current *satp* configuration:
 addresses are virtual if paging is enabled and physical if not.
 
 {cheri_base_ext_name} requires that the <<pcc>> grants the <<asr_perm>> to
-change the page-table root *satp* and other virtual-memory parameters as
-described in xref:supervisor-level-csrs-section[xrefstyle=short].
+change the page-table root, as it is stored in *satp* together with other
+virtual-memory parameters. More detail are described in
+xref:supervisor-level-csrs-section[xrefstyle=short].
+
+WARNING: #TODO: We don't mention *satp* in this section?#
 
 [#section_invalid_addr_conv,reftext="Invalid address conversion"]
 ==== Invalid Address Handling
