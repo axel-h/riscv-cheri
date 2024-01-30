@@ -29,7 +29,9 @@ include::wavedrom/ct-unconditional-jalr-cap.adoc[]
 Capability Mode Description::
 JALR.PCC allows unconditional jumps to a target integer address. The target
 address in `rs1` is installed in the address field of the <<pcc>>. The address
-of the instruction following the jump (<<pcc>> + 4) is written to `rd`. This is identical to the standard <<JALR>> instruction, but with zero offset.
+of the instruction following the jump (<<pcc>> + 4) would be written to `rd`, but
+since this is c0 the result is discarded.
+This is identical to the standard <<JALR>> instruction, but with zero offset.
 
 Legacy Mode Description::
 JALR.CAP allows unconditional jumps to a target capability. The capability in

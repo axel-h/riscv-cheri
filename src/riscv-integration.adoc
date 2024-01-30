@@ -191,7 +191,8 @@ for software to discover and/or control the behaviour#
 The indirect jump and link <<pcc>> (<<JALR_PCC>>) instruction allows unconditional
 jumps to a target address. The target address is provided in an *x* register;
 the new address is installed in the address field of the <<pcc>>. The address of
-the instruction following the jump (*pc* + 4) is written to an *x* register.
+the instruction following the jump (*pc* + 4) is written to an *x* register, unless
+it is x0, which causes the write to be discarded.
 <<JALR_PCC>> causes an exception when a minimum sized instruction at the
 target address is not within the bounds of the <<pcc>> or the target address is
 misaligned.
@@ -237,7 +238,8 @@ The capability jump and link (<<CJAL>>) instruction replaces jump and link (<<JA
 the same encoding. <<CJAL>> sign-extends the offset and adds it to the address of
 the jump instruction to form the target address. The target address is
 installed in the address field of <<pcc>>. The capability with the address of the
-instruction following the jump (<<pcc>> + 4) is written to a *c* register.
+instruction following the jump (<<pcc>> + 4) is written to a *c* register. In
+case of c0, the capability write is discarded.
 
 The capability jump and link register (<<CJALR>>) instruction replaces the jump
 and link register (<<JALR>>) instruction at the same encoding. This instruction
